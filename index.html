@@ -7,20 +7,53 @@
   </head>
   <body>
     <div id="app">
-      <input v-model="symbol" @keyup.enter="updateSymbol" placeholder="Symbol">
-      <span v-if="quote">{{ quote.symbol }} - {{quote.description}}: {{ quote.last }}</span>
+      <quote-view v-for="symbol in symbols" v-bind:symbol="symbol" v-bind:key="symbol"></quote-view>
+      <quote-input></quote-input>
     </div>
     <script>
-      var app = new Vue({
-        el: "#app",
-        data: {
-          symbol: "",
-          quote: null
+
+      Vue.component('quote-view', {
+        props: ['symbol'],
+        data: function() {
+          return {
+            quote: null
+          }
+        },
+        watch: {
+          symbol: function (val) {
+            this.updateQuote(val)
+          }
+        },
+        created: function() {
+          this.updateQuote(this.symbol)
+        },
+        methods: {
+          updateQuote: function(symbol) {
+            this.quote = symbol ? dxFeed.getQuote(symbol) : null
+          }
+        },
+        template: '<div>{{symbol}}<span v-if="quote"> - {{quote.description}}: {{ quote.last }}</span></div>'
+      })
+
+      Vue.component('quote-input', {
+        data: function() {
+          return {
+            symbol: "",
+            symbolInput: null
+          }
         },
         methods: {
           updateSymbol: function(event) {
-            this.quote = dxFeed.getQuote(this.symbol)
+            this.symbol = this.symbolInput
           }
+        },
+        template: '<div><input v-model="symbolInput" @keyup.enter="updateSymbol" placeholder="Symbol"> <quote-view style="display: inline" v-bind:symbol="symbol"/></div>'
+      })
+
+      var app = new Vue({
+        el: "#app",
+        data: {
+          symbols: ['SPY', '/ES']
         }
       })
     </script>
