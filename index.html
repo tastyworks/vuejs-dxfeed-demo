@@ -44,7 +44,7 @@
         },
         methods: {
           updateSymbol: function(event) {
-            this.symbol = this.symbolInput
+            this.symbol = this.symbolInput.toUpperCase()
           }
         },
         template: '<div><input v-model="symbolInput" @keyup.enter="updateSymbol" placeholder="Symbol"> <quote-view style="display: inline" v-bind:symbol="symbol"/></div>'
