@@ -2,77 +2,15 @@
 <html>
   <head>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
     <script src="https://tools.dxfeed.com/webservice/js/cometd/org/cometd.js"></script>
-    <script src="https://tools.dxfeed.com/webservice/js/cometd/jquery/jquery.cometd.js"></script>
-    <script src="https://tools.dxfeed.com/webservice/js/dxfeed/dxfeed.context.js"></script>
-    <script src="https://tools.dxfeed.com/webservice/js/dxfeed/dxfeed.cometd.js"></script>
+    <script src="dxfeed.cometd.js"></script>
   </head>
   <body>
     <div id="app">
       <input v-model="symbol" @keyup.enter="updateSymbol" placeholder="Symbol">
-      <span v-if="quote">{{ quote.symbol }}: {{ quote.last }}</span>
+      <span v-if="quote">{{ quote.symbol }} - {{quote.description}}: {{ quote.last }}</span>
     </div>
     <script>
-      var dxFeed = (function() {
-        var that = {}
-        var quoteMap = {}
-        dx.feed.connect('https://qds.dough.com/dxfeed/cometd')
-        var dxSub = dx.feed.createSubscription(['Trade', 'Quote', 'Summary', 'Profile'])
-        that.lookupQuote = function(symbol) {
-          var quote = quoteMap[symbol]
-          if (!quote) {
-            quote = {
-              symbol: symbol,
-              last: NaN,
-              bid: NaN,
-              ask: NaN,
-              open: NaN,
-              high: NaN,
-              low: NaN,
-              close: NaN,
-              description: null
-            }
-            quoteMap[symbol] = quote
-          }
-
-          return quote
-        }
-
-        dxSub.onEvent = function(event) {
-          var symbol = event.eventSymbol
-          var quote = that.lookupQuote(symbol)
-
-          switch(event.eventType) {
-              case 'Trade':
-                quote.last = event.price
-                break
-              case 'Quote':
-                quote.bid = event.bidPrice
-                quote.ask = event.askPrice
-                break
-              case 'Summary':
-                quote.open = event.dayOpenPrice
-                quote.high = event.dayHighPrice
-                quote.low = event.dayLowPrice
-                quote.close = event.prevDayClosePrice
-                break
-              case 'Profile':
-                quote.description = event.description
-                break
-              default:
-                console.log('Unknown', event.eventType)
-          }
-        }
-        that.getQuote = function(symbol) {
-          var quote = this.lookupQuote(symbol)
-          dxSub.addSymbols([symbol])
-
-          return quote
-        }
-        return that
-      })()
-
       var app = new Vue({
         el: "#app",
         data: {
