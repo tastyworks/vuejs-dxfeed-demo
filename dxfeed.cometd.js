@@ -17,8 +17,6 @@
 {
   // Remap cometd JSON functions to html5 JSON functions.
   var org_cometd = org.cometd;
-  org_cometd.JSON.toJSON = JSON.stringify;
-  org_cometd.JSON.fromJSON = JSON.parse;
 
   org.CometD = function(name)
   {
@@ -1001,7 +999,7 @@ SOFTWARE.
   var dxFeed = (function() {
     var that = {}
     var quoteMap = {}
-    dx.feed.connect('https://qds.dough.com/dxfeed/cometd')
+    dx.feed.connect('https://tools.dxfeed.com/webservice/cometd')
     var dxSub = dx.feed.createSubscription(['Trade', 'Quote', 'Summary', 'Profile'])
     that.lookupQuote = function(symbol) {
       var quote = quoteMap[symbol]
